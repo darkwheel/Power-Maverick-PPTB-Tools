@@ -1,5 +1,20 @@
 import type { PluginAssembly, PluginPackage, PluginType, ProcessingStep, SdkMessage, SdkMessageFilter, StepImage, ServiceEndpoint } from "../models/interfaces";
 
+const GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Validate that a string is a Dataverse-format GUID (lowercase hex, hyphenated, no braces). */
+function isGuid(value: string): boolean {
+    return GUID_REGEX.test(value);
+}
+
+/** Build the @odata.bind value for the pluginpackages collection. Validates the GUID first. */
+function buildPackageBind(packageId: string): string {
+    if (!isGuid(packageId)) {
+        throw new Error(`Invalid package ID: "${packageId}"`);
+    }
+    return `/pluginpackages(${packageId})`;
+}
+
 export class DataverseClient {
     async fetchAssemblies(): Promise<PluginAssembly[]> {
         try {
@@ -235,10 +250,7 @@ export class DataverseClient {
                 sourcetype: 0,
             };
             if (packageId) {
-                if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(packageId)) {
-                    throw new Error(`Invalid package ID: "${packageId}"`);
-                }
-                payload["packageid@odata.bind"] = `/pluginpackages(${packageId})`;
+                payload["packageid@odata.bind"] = buildPackageBind(packageId);
             }
             const result = await window.dataverseAPI.create("pluginassembly", payload, "primary");
             return result.id;
@@ -253,14 +265,7 @@ export class DataverseClient {
             const payload: Record<string, unknown> = { description };
             if (content) payload["content"] = content;
             if (packageId !== undefined) {
-                if (packageId) {
-                    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(packageId)) {
-                        throw new Error(`Invalid package ID: "${packageId}"`);
-                    }
-                    payload["packageid@odata.bind"] = `/pluginpackages(${packageId})`;
-                } else {
-                    payload["packageid@odata.bind"] = null;
-                }
+                payload["packageid@odata.bind"] = packageId ? buildPackageBind(packageId) : null;
             }
             await window.dataverseAPI.update("pluginassembly", assemblyId, payload);
         } catch (error: unknown) {

@@ -17,6 +17,7 @@ function getTypeLabel(node: TreeNode): string {
         case "image": return "Image";
         case "entity-group": return "Entity";
         case "message-group": return "Message";
+        case "package-group": return "Package Group";
         case "package": return "Package";
         case "serviceendpoint": return node.isWebhook ? "Webhook" : "Service Endpoint";
     }
@@ -34,6 +35,7 @@ function getIconClass(node: TreeNode): string {
     }
     if (node.type === "entity-group") return "node-icon node-icon-entity";
     if (node.type === "message-group") return "node-icon node-icon-message";
+    if (node.type === "package-group") return "node-icon node-icon-package";
     if (node.type === "serviceendpoint") return node.isWebhook ? "node-icon node-icon-webhook" : "node-icon node-icon-endpoint";
     return "node-icon node-icon-image";
 }
@@ -45,6 +47,7 @@ function getIconText(node: TreeNode): string {
     if (node.type === "step") return "S";
     if (node.type === "entity-group") return "E";
     if (node.type === "message-group") return "M";
+    if (node.type === "package-group") return "K";
     if (node.type === "serviceendpoint") return node.isWebhook ? "W" : "E";
     return "I";
 }
@@ -65,7 +68,7 @@ function FlatNode({ node, depth, selectedId, onSelectNode, onToggleExpand, onDou
     // Images and virtual group nodes never lazy-load.
     // For other node types: show toggle if children haven't been fetched yet (lazy load pending)
     // OR children have been fetched and there is at least one child.
-    const canHaveChildren = node.type !== "image" && node.type !== "entity-group" && node.type !== "message-group";
+    const canHaveChildren = node.type !== "image" && node.type !== "entity-group" && node.type !== "message-group" && node.type !== "package-group";
     const showToggle = canHaveChildren && (
         !node.childrenLoaded || (node.children?.length ?? 0) > 0
     );

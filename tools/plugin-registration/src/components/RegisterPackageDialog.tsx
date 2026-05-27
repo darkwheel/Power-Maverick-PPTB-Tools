@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import type { ChangeEvent } from "react";
 import type { PluginPackage } from "../models/interfaces";
 
 interface RegisterPackageDialogProps {
@@ -47,14 +48,18 @@ export function RegisterPackageDialog({
     if (!isOpen) return null;
 
     const handleNameChange = (value: string) => {
+        // Capture the previously-derived unique name BEFORE updating state.
+        // Comparing against the current `name` (not the new `value`) tells us
+        // whether the user has manually edited `uniquename` since the last auto-derivation.
+        const previousDerived = deriveUniqueName(name);
         setName(value);
         // Auto-derive unique name only when creating and user hasn't manually edited it
-        if (!isUpdate && uniquename === deriveUniqueName(name)) {
+        if (!isUpdate && uniquename === previousDerived) {
             setUniquename(deriveUniqueName(value));
         }
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         setFileError("");
         const file = e.target.files?.[0];
         if (!file) return;

@@ -111,9 +111,9 @@ function buildTreeNodes(
     const orphanedNodes: TreeNode[] = orphanedAssemblies.length > 0
         ? [{
             id: "__orphaned_packages__",
-            type: "entity-group" as const,
+            type: "package-group" as const,
             name: "Unknown Package (orphaned)",
-            data: { groupName: "Unknown Package (orphaned)", groupType: "entity" as const },
+            data: { groupName: "Unknown Package (orphaned)", groupType: "package" as const },
             children: orphanedAssemblies.map(buildAssemblyNode),
             isExpanded: expandedIds.has("__orphaned_packages__"),
             childrenLoaded: true,

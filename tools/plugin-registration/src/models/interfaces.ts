@@ -109,11 +109,11 @@ export interface ServiceEndpoint {
     modifiedon?: string;
 }
 
-export type TreeNodeType = 'assembly' | 'plugintype' | 'step' | 'image' | 'entity-group' | 'message-group' | 'serviceendpoint' | 'package';
+export type TreeNodeType = 'assembly' | 'plugintype' | 'step' | 'image' | 'entity-group' | 'message-group' | 'package-group' | 'serviceendpoint' | 'package';
 
 export interface VirtualGroupData {
     groupName: string;
-    groupType: 'entity' | 'message';
+    groupType: 'entity' | 'message' | 'package';
 }
 
 export interface TreeNode {
