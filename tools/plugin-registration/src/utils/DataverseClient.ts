@@ -2,7 +2,7 @@ import type { PluginAssembly, PluginPackage, PluginType, ProcessingStep, SdkMess
 
 const GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Validate that a string is a Dataverse-format GUID (lowercase hex, hyphenated, no braces). */
+/** Validate that a string is a Dataverse-format GUID (case-insensitive hex, hyphenated, no braces). */
 function isGuid(value: string): boolean {
     return GUID_REGEX.test(value);
 }

@@ -83,7 +83,12 @@ export function RegisterAssemblyDialog({
             <div className="dialog">
                 <div className="dialog-header">
                     <span className="dialog-title">{title}</span>
-                    <button className="dialog-close" onClick={onClose}>✕</button>
+                    <button
+                        className="dialog-close"
+                        onClick={onClose}
+                        aria-label="Close dialog"
+                        title="Close dialog"
+                    >✕</button>
                 </div>
                 <div className="dialog-body">
                     <div className="form-row">
@@ -128,13 +133,37 @@ export function RegisterAssemblyDialog({
                                 onChange={(e) => setPackageId(e.target.value)}
                             >
                                 <option value="">Standalone (no package)</option>
-                                {packages
-                                    .filter((p) => !p.ismanaged)
-                                    .map((p) => (
-                                        <option key={p.pluginpackageid} value={p.pluginpackageid}>
-                                            {p.name} ({p.version})
-                                        </option>
-                                    ))}
+                                {(() => {
+                                    // If the assembly's current package is managed, it would be
+                                    // filtered out below — render it as a disabled option so the
+                                    // controlled <select>'s value still matches a real option and
+                                    // the user can see what package the assembly belongs to.
+                                    const currentPkg = packageId
+                                        ? packages.find((p) => p.pluginpackageid === packageId)
+                                        : undefined;
+                                    const showCurrentAsDisabled =
+                                        !!currentPkg && currentPkg.ismanaged;
+                                    return (
+                                        <>
+                                            {showCurrentAsDisabled && currentPkg && (
+                                                <option
+                                                    key={currentPkg.pluginpackageid}
+                                                    value={currentPkg.pluginpackageid}
+                                                    disabled
+                                                >
+                                                    {currentPkg.name} ({currentPkg.version}) — managed (current)
+                                                </option>
+                                            )}
+                                            {packages
+                                                .filter((p) => !p.ismanaged)
+                                                .map((p) => (
+                                                    <option key={p.pluginpackageid} value={p.pluginpackageid}>
+                                                        {p.name} ({p.version})
+                                                    </option>
+                                                ))}
+                                        </>
+                                    );
+                                })()}
                             </select>
                             {onCreatePackage && (
                                 <button
@@ -146,9 +175,10 @@ export function RegisterAssemblyDialog({
                                     + Create New Package…
                                 </button>
                             )}
-                            {isUpdate && existingAssembly?._packageid_value && (
+                            {isUpdate && existingAssembly?._packageid_value &&
+                                !packages.find((p) => p.pluginpackageid === existingAssembly._packageid_value) && (
                                 <span style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
-                                    Currently in package: {packages.find((p) => p.pluginpackageid === existingAssembly._packageid_value)?.name ?? existingAssembly._packageid_value}
+                                    Currently in package: {existingAssembly._packageid_value}
                                 </span>
                             )}
                         </div>

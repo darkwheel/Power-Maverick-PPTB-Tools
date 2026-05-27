@@ -98,7 +98,12 @@ export function RegisterPackageDialog({
             <div className="dialog">
                 <div className="dialog-header">
                     <span className="dialog-title">{title}</span>
-                    <button className="dialog-close" onClick={onClose}>✕</button>
+                    <button
+                        className="dialog-close"
+                        onClick={onClose}
+                        aria-label="Close dialog"
+                        title="Close dialog"
+                    >✕</button>
                 </div>
                 <div className="dialog-body">
                     {!isUpdate && (

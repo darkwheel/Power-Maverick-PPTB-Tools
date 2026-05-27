@@ -68,7 +68,9 @@ function FlatNode({ node, depth, selectedId, onSelectNode, onToggleExpand, onDou
     // Images and virtual group nodes never lazy-load.
     // For other node types: show toggle if children haven't been fetched yet (lazy load pending)
     // OR children have been fetched and there is at least one child.
-    const canHaveChildren = node.type !== "image" && node.type !== "entity-group" && node.type !== "message-group" && node.type !== "package-group";
+    // package-group nodes are synthesized with their children already attached (e.g. orphan
+    // assemblies under a package), so allow them to toggle whenever they actually have children.
+    const canHaveChildren = node.type !== "image" && node.type !== "entity-group" && node.type !== "message-group";
     const showToggle = canHaveChildren && (
         !node.childrenLoaded || (node.children?.length ?? 0) > 0
     );
